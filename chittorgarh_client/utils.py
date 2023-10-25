@@ -4,7 +4,7 @@ from typing import Dict, Optional
 import requests
 from lxml import html
 
-from src.chittorgarh_client.models import IPO
+from chittorgarh_client.models import IPO
 
 
 def parse_table_from_url(url: str, xpath: str) -> Dict[str, Dict[str, str]]:
