@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='app-name',
+    name='chittorgarh-client',
     version='0.1',
     author='Dhaval Mehta',
     description='Unofficial chittorgarh.com client',
