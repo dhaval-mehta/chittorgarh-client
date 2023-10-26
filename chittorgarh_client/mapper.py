@@ -42,8 +42,8 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
     return IPO(
         id=url,
         name=name,
-        start_date=open_date,
-        end_date=close_date,
+        open_date=open_date,
+        close_date=close_date,
         lot_size='',
         issue_price=issue_price,
         issue_size=issue_size,
