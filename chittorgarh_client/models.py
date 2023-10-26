@@ -12,6 +12,18 @@ class IPO:
         self.gmp_remarks = kwargs.get('gmp_remarks')
 
 
+class NCD:
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.id = kwargs.get('id')
+        self.name = kwargs.get('name')
+        self.open_date = kwargs.get('open_date')
+        self.close_date = kwargs.get('close_date')
+        self.base_size = kwargs.get('base_size')
+        self.shelf_size = kwargs.get('shelf_size')
+        self.rating = kwargs.get('rating')
+
+
 class IPOType:
     EQUITY = 'equity'
     DEBT = 'debt'

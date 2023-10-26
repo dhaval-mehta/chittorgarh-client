@@ -1,10 +1,7 @@
-import datetime
-from typing import Dict, Optional
+from typing import Dict
 
 import requests
 from lxml import html
-
-from chittorgarh_client.models import IPO
 
 
 def parse_table_from_url(url: str, xpath: str) -> Dict[str, Dict[str, str]]:
@@ -72,49 +69,3 @@ def is_blank(s: str) -> bool:
         or s == '' \
         or s.casefold() == 'na'.casefold() \
         or s == '--'
-
-
-def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices: str,
-              issue_size: str, ipo_type: str, date_format: str, gmp: Optional[str] = None) -> IPO:
-    def parse_date(date):
-        if date == '':
-            return date
-        try:
-            date = datetime.datetime.strptime(date, date_format).date()
-            if date.year == 1900:
-                date = date.replace(year=datetime.datetime.now().year)
-            return date
-        except ValueError:
-            raise Exception('failed to parse start date')
-
-    try:
-        issue_size = round(float(issue_size), 2)
-    except ValueError:
-        pass
-
-    open_date = parse_date(open_date)
-    close_date = parse_date(close_date)
-
-    issue_prices = issue_prices.split(" ")
-    if len(issue_prices) == 3:
-        issue_price = int(float(issue_prices[2]))
-    elif len(issue_prices) == 1 and not is_blank(issue_prices[0]):
-        issue_price = int(float(issue_prices[0]))
-    else:
-        issue_price = ''
-
-    if not is_blank(gmp):
-        gmp = int(gmp)
-
-    name = name.replace("ipo", '').replace("IPO", '').replace("Ipo", '').strip()
-    return IPO(
-        id=url,
-        name=name,
-        start_date=open_date,
-        end_date=close_date,
-        lot_size='',
-        issue_price=issue_price,
-        issue_size=issue_size,
-        ipo_type=ipo_type,
-        gmp=gmp,
-    )
