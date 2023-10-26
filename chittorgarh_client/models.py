@@ -24,6 +24,19 @@ class NCD:
         self.rating = kwargs.get('rating')
 
 
+class BuyBack:
+    def __init__(self, **kwargs) -> None:
+        super().__init__()
+        self.id = kwargs.get('id')
+        self.name = kwargs.get('name')
+        self.record_date = kwargs.get('record_date')
+        self.open_date = kwargs.get('open_date')
+        self.close_date = kwargs.get('close_date')
+        self.buy_back_price = kwargs.get('buy_back_price')
+        self.market_price = kwargs.get('market_price')
+        self.issue_size = kwargs.get('issue_size')
+
+
 class IPOType:
     EQUITY = 'equity'
     DEBT = 'debt'

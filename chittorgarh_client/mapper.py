@@ -1,7 +1,7 @@
 import datetime
 from typing import Optional
 
-from chittorgarh_client.models import IPO, NCD
+from chittorgarh_client.models import IPO, NCD, BuyBack
 from chittorgarh_client.utils import is_blank
 
 
@@ -65,4 +65,23 @@ def build_ncd(url: str, name: str, open_date: str, close_date: str, base_size: s
         base_size=base_size,
         shelf_size=shelf_size,
         rating=rating,
+    )
+
+
+def build_buy_back(url: str, name: str, record_date: str, open_date: str, close_date: str, buy_back_price: str,
+                   market_price: str, issue_size: str, date_format: str) -> BuyBack:
+
+    record_date = parse_date(record_date, date_format)
+    open_date = parse_date(open_date, date_format)
+    close_date = parse_date(close_date, date_format)
+
+    return BuyBack(
+        id=url,
+        name=name,
+        record_date=record_date,
+        open_date=open_date,
+        close_date=close_date,
+        buy_back_price=buy_back_price,
+        market_price=market_price,
+        issue_size=issue_size,
     )

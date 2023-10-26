@@ -3,8 +3,8 @@ from typing import Dict, List
 import requests
 from lxml import html
 
-from chittorgarh_client.mapper import build_ipo, build_ncd
-from chittorgarh_client.models import IPOSubscriptionCategory, IPO, IPOType, NCD
+from chittorgarh_client.mapper import build_ipo, build_ncd, build_buy_back
+from chittorgarh_client.models import IPOSubscriptionCategory, IPO, IPOType, NCD, BuyBack
 from chittorgarh_client.utils import parse_table_from_url, parse_table
 
 
@@ -14,11 +14,12 @@ class ChittorgarhClient:
     MAIN_BOARD_IPO_PAGE_URL = BASE_URL + 'report/mainboard-ipo-list-in-india-bse-nse/83/'
     SME_IPO_PAGE_URL = BASE_URL + 'report/sme-ipo-list-in-india-bse-sme-nse-emerge/84/'
     NCD_PAGE_URL = BASE_URL + 'report/latest-ncd-issue-in-india/27/'
+    TENDER_BUYBACK_PAGE_URL = BASE_URL + 'report/latest-buyback-issues-in-india/80/tender-offer-buyback/'
 
     MAIN_BOARD_IPO_TABLE_XPATH = '//*[@id="report_data"]/div/table'
     SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     NCD_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
-
+    TENDER_BUYBACK_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     SUBSCRIPTION_XPATH = '/html/body/div/div[2]/table'
 
     MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
@@ -32,7 +33,7 @@ class ChittorgarhClient:
         'Total': IPOSubscriptionCategory.Total,
     }
 
-    def get_live_subscription_data(self, ipo_id: str | int) -> Dict[str, float]:
+    def get_live_subscription(self, ipo_id: str | int) -> Dict[str, float]:
         table = parse_table_from_url(self.SUBSCRIPTION_URL.format(ipo_id=ipo_id), self.SUBSCRIPTION_XPATH)
         subscription_data = {}
 
@@ -43,7 +44,7 @@ class ChittorgarhClient:
 
         return subscription_data
 
-    def get_mainboard_ipo_list(self) -> List[IPO]:
+    def get_mainboard_ipos(self) -> List[IPO]:
         data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
@@ -59,7 +60,7 @@ class ChittorgarhClient:
             ))
         return ipos
 
-    def get_sme_ipo_list(self) -> List[IPO]:
+    def get_sme_ipos(self) -> List[IPO]:
         data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
@@ -75,7 +76,7 @@ class ChittorgarhClient:
             ))
         return ipos
 
-    def get_ncd_list(self, year=None) -> List[NCD]:
+    def get_ncds(self, year=None) -> List[NCD]:
         params = {}
         if year is not None:
             params['year'] = year
@@ -100,6 +101,31 @@ class ChittorgarhClient:
             ))
         return ncds
 
+    def get_buy_backs(self, year=None) -> List[BuyBack]:
+        params = {}
+        if year is not None:
+            params['year'] = year
+        response = requests.get(url=self.TENDER_BUYBACK_PAGE_URL, params=params)
+        response.raise_for_status()
+        table = html.fromstring(response.text).xpath(self.TENDER_BUYBACK_TABLE_XPATH)
+        if len(table) != 1:
+            print('Failed to parse table')
+
+        data = parse_table(table[0])
+        buybacks = []
+        for name, details in data.items():
+            buybacks.append(build_buy_back(
+                url=details['url'],
+                name=name,
+                record_date=details['Record Date'],
+                open_date=details['Issue Open'],
+                close_date=details['Issue Close'],
+                buy_back_price=details['BuyBack price (Per Share)'],
+                market_price=details['Current Market Price'],
+                issue_size=details['Issue Size - Amount (Cr)'],
+                date_format=self.MAIN_BOARD_IPO_DATE_FORMAT,
+            ))
+        return buybacks
 
 class InvestorGainClient:
     BASE_URL = 'https://www.investorgain.com/'
