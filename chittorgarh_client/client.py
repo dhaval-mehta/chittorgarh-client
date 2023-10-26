@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 import requests
 from lxml import html
@@ -33,7 +33,7 @@ class ChittorgarhClient:
         'Total': IPOSubscriptionCategory.Total,
     }
 
-    def get_live_subscription(self, ipo_id: str | int) -> Dict[str, float]:
+    def get_live_subscription(self, ipo_id: Union[str, int]) -> Dict[str, float]:
         table = parse_table_from_url(self.SUBSCRIPTION_URL.format(ipo_id=ipo_id), self.SUBSCRIPTION_XPATH)
         subscription_data = {}
 
