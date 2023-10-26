@@ -15,7 +15,6 @@ class ChittorgarhClient:
     SUBSCRIPTION_XPATH = '/html/body/div/div[2]/table'
 
     MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
-    GMP_DATE_FORMAT = '%d-%b'
 
     subscription_category_mapping = {
         'QIB': IPOSubscriptionCategory.QIB,
@@ -41,14 +40,15 @@ class ChittorgarhClient:
         data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
-            ipos.append(self._parse_equity_ipo_data(
+            ipos.append(build_ipo(
                 url=data['url'],
                 name=name,
-                start_date=data['Open Date'],
-                end_date=data['Close Date'],
+                open_date=data['Open Date'],
+                close_date=data['Close Date'],
                 issue_prices=data['Issue Price (Rs)'],
                 issue_size=data['Issue Size (Rs Cr.)'],
-                ipo_type=IPOType.EQUITY
+                ipo_type=IPOType.EQUITY,
+                date_format=self.MAIN_BOARD_IPO_DATE_FORMAT,
             ))
         return ipos
 
@@ -56,54 +56,17 @@ class ChittorgarhClient:
         data = parse_table_from_url(self.SME_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
-            ipos.append(self._parse_equity_ipo_data(
+            ipos.append(build_ipo(
                 url=data['url'],
                 name=name,
-                start_date=data['Open Date'],
-                end_date=data['Close Date'],
+                open_date=data['Open Date'],
+                close_date=data['Close Date'],
                 issue_prices=data['Issue Price (Rs)'],
                 issue_size=data['Issue Size (Rs Cr.)'],
-                ipo_type=IPOType.SME
+                ipo_type=IPOType.SME,
+                date_format=self.MAIN_BOARD_IPO_DATE_FORMAT,
             ))
         return ipos
-
-    def _parse_equity_ipo_data(self, url, name, start_date, end_date, issue_prices, issue_size, ipo_type):
-        issue_prices = issue_prices.split(" ")
-        try:
-            issue_size = round(float(issue_size), 2)
-        except ValueError:
-            pass
-
-        if start_date != '':
-            try:
-                start_date = datetime.datetime.strptime(start_date, self.MAIN_BOARD_IPO_DATE_FORMAT).date()
-            except ValueError:
-                raise Exception('failed to parse start date')
-
-        if end_date != '':
-            try:
-                end_date = datetime.datetime.strptime(end_date, self.MAIN_BOARD_IPO_DATE_FORMAT).date()
-            except ValueError:
-                raise Exception('failed to parse end date')
-
-        if len(issue_prices) == 3:
-            issue_price = int(float(issue_prices[2]))
-        elif len(issue_prices) == 1 and issue_prices[0] != '':
-            issue_price = int(float(issue_prices[0]))
-        else:
-            issue_price = ''
-
-        name = name.replace("ipo", '').replace("IPO", '').replace("Ipo", '').strip()
-        return IPO(
-            id=url,
-            name=name,
-            start_date=start_date,
-            end_date=end_date,
-            lot_size='',
-            issue_price=issue_price,
-            issue_size=issue_size,
-            ipo_type=ipo_type,
-        )
 
 
 class InvestorGainClient:
