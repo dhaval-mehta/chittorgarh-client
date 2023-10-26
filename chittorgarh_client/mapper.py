@@ -38,9 +38,12 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
     if not is_blank(gmp):
         gmp = int(gmp)
 
+    if url.endswith('/'):
+        url = url[:len(url) - 1]
+
     name = name.replace("ipo", '').replace("IPO", '').replace("Ipo", '').strip()
     return IPO(
-        id=url,
+        id=url.split('/')[-1],
         name=name,
         open_date=open_date,
         close_date=close_date,
@@ -70,7 +73,6 @@ def build_ncd(url: str, name: str, open_date: str, close_date: str, base_size: s
 
 def build_buy_back(url: str, name: str, record_date: str, open_date: str, close_date: str, buy_back_price: str,
                    market_price: str, issue_size: str, date_format: str) -> BuyBack:
-
     record_date = parse_date(record_date, date_format)
     open_date = parse_date(open_date, date_format)
     close_date = parse_date(close_date, date_format)

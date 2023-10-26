@@ -36,11 +36,6 @@ def parse_table(html_table) -> Dict[str, Dict[str, str]]:
         for index, td in enumerate(children[1:]):
             row[headers[index].strip()] = td.text_content().strip()
 
-        for child in children:
-            for grandchild in child.getchildren():
-                if grandchild.tag == 'a':
-                    row['url'] = grandchild.attrib['href'].strip()
-
         table[key] = row
 
     return table
