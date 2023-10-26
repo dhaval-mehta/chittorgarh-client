@@ -1,3 +1,4 @@
+import re
 from typing import Dict
 
 import requests
@@ -34,9 +35,10 @@ def parse_table(html_table) -> Dict[str, Dict[str, str]]:
                 break
 
         for index, td in enumerate(children[1:]):
-            row[headers[index].strip()] = td.text_content().strip()
+            k = remove_non_ascii(headers[index].strip())
+            row[k] = remove_non_ascii(td.text_content().strip())
 
-        table[key] = row
+        table[remove_non_ascii(key)] = row
 
     return table
 
@@ -64,3 +66,8 @@ def is_blank(s: str) -> bool:
         or s == '' \
         or s.casefold() == 'na'.casefold() \
         or s == '--'
+
+
+def remove_non_ascii(text):
+    return re.sub(r'[^\x00-\x7F]', "", text).strip()
+

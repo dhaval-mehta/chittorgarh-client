@@ -37,6 +37,8 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
 
     if not is_blank(gmp):
         gmp = int(gmp)
+    else:
+        gmp = None
 
     if url.endswith('/'):
         url = url[:len(url) - 1]

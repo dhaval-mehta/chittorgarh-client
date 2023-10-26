@@ -27,8 +27,8 @@ class ChittorgarhClient:
     subscription_category_mapping = {
         'QIB': IPOSubscriptionCategory.QIB,
         'NII': IPOSubscriptionCategory.NII,
-        'bNII (bids above ₹10L)': IPOSubscriptionCategory.BHNI,
-        'sNII (bids below ₹10L)': IPOSubscriptionCategory.SHNI,
+        'bNII (bids above 10L)': IPOSubscriptionCategory.BHNI,
+        'sNII (bids below 10L)': IPOSubscriptionCategory.SHNI,
         'Retail': IPOSubscriptionCategory.Retail,
         'Total': IPOSubscriptionCategory.Total,
     }
@@ -127,6 +127,7 @@ class ChittorgarhClient:
             ))
         return buybacks
 
+
 class InvestorGainClient:
     BASE_URL = 'https://www.investorgain.com/'
 
@@ -149,9 +150,9 @@ class InvestorGainClient:
                 close_date=data['Close'],
                 issue_prices=data['Price'],
                 issue_size=data['IPO Size'],
+                gmp=data['GMP()'],
                 ipo_type=IPOType.EQUITY,
                 date_format=self.IPO_PAGE_DATE_FORMAT,
-                gmp=data['GMP(â\x82¹)'],
             ))
         return ipos
 
@@ -162,10 +163,11 @@ class InvestorGainClient:
             ipos.append(build_ipo(
                 url=data['url'],
                 name=name,
-                open_date=data['Open Date'],
-                close_date=data['Close Date'],
-                issue_prices=data['Issue Price (Rs)'],
-                issue_size=data['Issue Size (Rs Cr.)'],
+                open_date=data['Open'],
+                close_date=data['Close'],
+                issue_prices=data['Price'],
+                issue_size=data['IPO Size'],
+                gmp=data['GMP()'],
                 ipo_type=IPOType.SME,
                 date_format=self.IPO_PAGE_DATE_FORMAT,
             ))

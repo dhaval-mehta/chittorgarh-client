@@ -9,7 +9,13 @@ class IPO:
         self.issue_price = kwargs.get('issue_price')
         self.issue_size = kwargs.get('issue_size')
         self.gmp = kwargs.get('gmp')
-        self.gmp_remarks = kwargs.get('gmp_remarks')
+
+    @property
+    def gmp_percentage(self):
+        if self.gmp and self.issue_price:
+            return round(100 * self.gmp / self.issue_price, 2)
+
+        return ''
 
 
 class NCD:
