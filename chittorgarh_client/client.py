@@ -1,4 +1,3 @@
-import datetime
 from typing import Dict
 
 from .models import IPOSubscriptionCategory, IPO, IPOType
@@ -9,9 +8,10 @@ class ChittorgarhClient:
     BASE_URL = 'https://www.chittorgarh.com/'
     SUBSCRIPTION_URL = BASE_URL + 'documents/subscription/{ipo_id}/details.html'
     MAIN_BOARD_IPO_PAGE_URL = BASE_URL + 'report/mainboard-ipo-list-in-india-bse-nse/83/'
-    SME_BOARD_IPO_PAGE_URL = BASE_URL + 'report/sme-ipo-list-in-india-bse-sme-nse-emerge/84/'
+    SME_IPO_PAGE_URL = BASE_URL + 'report/sme-ipo-list-in-india-bse-sme-nse-emerge/84/'
 
-    MAIN_BOARD_TABLE_XPATH = '//*[@id="report_data"]/div/table'
+    MAIN_BOARD_IPO_TABLE_XPATH = '//*[@id="report_data"]/div/table'
+    SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     SUBSCRIPTION_XPATH = '/html/body/div/div[2]/table'
 
     MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
@@ -37,7 +37,7 @@ class ChittorgarhClient:
         return subscription_data
 
     def get_mainboard_ipo_list(self) -> list[IPO]:
-        data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_TABLE_XPATH)
+        data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
             ipos.append(build_ipo(
@@ -53,7 +53,7 @@ class ChittorgarhClient:
         return ipos
 
     def get_sme_ipo_list(self) -> list[IPO]:
-        data = parse_table_from_url(self.SME_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_TABLE_XPATH)
+        data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
             ipos.append(build_ipo(
@@ -71,14 +71,17 @@ class ChittorgarhClient:
 
 class InvestorGainClient:
     BASE_URL = 'https://www.investorgain.com/'
-    IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/ipo'
 
-    IPO_PAGE_TABLE_XPATH = '/html/body/div[7]/div[3]/div[1]/div[4]/div/div/div[2]/table'
+    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/ipo'
+    SME_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/sme'
+
+    MAIN_BOARD_IPO_TABLE_XPATH = '/html/body/div[7]/div[3]/div[1]/div[4]/div/div/div[2]/table'
+    SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
 
     IPO_PAGE_DATE_FORMAT = '%d-%b'
 
     def get_mainboard_ipo_list(self) -> list[IPO]:
-        data = parse_table_from_url(self.IPO_PAGE_URL, self.IPO_PAGE_TABLE_XPATH)
+        data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
             ipos.append(build_ipo(
@@ -95,7 +98,7 @@ class InvestorGainClient:
         return ipos
 
     def get_sme_ipo_list(self) -> list[IPO]:
-        data = parse_table_from_url(self.SME_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_TABLE_XPATH)
+        data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
             ipos.append(build_ipo(
@@ -109,4 +112,3 @@ class InvestorGainClient:
                 date_format=self.IPO_PAGE_DATE_FORMAT,
             ))
         return ipos
-
