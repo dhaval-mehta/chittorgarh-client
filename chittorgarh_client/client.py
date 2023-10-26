@@ -138,7 +138,7 @@ class InvestorGainClient:
 
     IPO_PAGE_DATE_FORMAT = '%d-%b'
 
-    def get_mainboard_ipo_list(self) -> List[IPO]:
+    def get_mainboard_ipos(self) -> List[IPO]:
         data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
@@ -155,7 +155,7 @@ class InvestorGainClient:
             ))
         return ipos
 
-    def get_sme_ipo_list(self) -> List[IPO]:
+    def get_sme_ipos(self) -> List[IPO]:
         data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
