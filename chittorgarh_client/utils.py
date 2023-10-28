@@ -10,7 +10,7 @@ def parse_table_from_url(url: str, xpath: str) -> Dict[str, Dict[str, str]]:
     response.raise_for_status()
     table = html.fromstring(response.text).xpath(xpath)
     if len(table) != 1:
-        print('Failed to parse table')
+        raise Exception('Failed to parse table')
     return parse_table(table[0])
 
 
