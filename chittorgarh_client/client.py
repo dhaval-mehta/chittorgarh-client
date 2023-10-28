@@ -134,7 +134,7 @@ class InvestorGainClient:
     MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/ipo'
     SME_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/sme'
 
-    MAIN_BOARD_IPO_TABLE_XPATH = '/html/body/div[7]/div[3]/div[1]/div[4]/div/div/div[2]/table'
+    MAIN_BOARD_IPO_TABLE_XPATH = '//*[@id="mainTable"]'
     SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
 
     IPO_PAGE_DATE_FORMAT = '%d-%b'
