@@ -89,3 +89,4 @@ def build_buy_back(url: str, name: str, record_date: str, open_date: str, close_
         market_price=market_price,
         issue_size=issue_size,
     )
+

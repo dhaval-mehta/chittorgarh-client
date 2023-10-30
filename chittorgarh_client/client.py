@@ -4,13 +4,13 @@ import requests
 from lxml import html
 
 from chittorgarh_client.mapper import build_ipo, build_ncd, build_buy_back
-from chittorgarh_client.models import IPOSubscriptionCategory, IPO, IPOType, NCD, BuyBack
+from chittorgarh_client.models import IPOSubscriptionCategory, IPO, IPOType, NCD, BuyBack, Subscription
 from chittorgarh_client.utils import parse_table_from_url, parse_table
 
 
 class ChittorgarhClient:
     BASE_URL = 'https://www.chittorgarh.com/'
-    SUBSCRIPTION_URL = BASE_URL + 'documents/subscription/{ipo_id}/details.html'
+    SUBSCRIPTION_URL = BASE_URL + 'documents/subscription/{ipo_id}/subscriptions.html'
     MAIN_BOARD_IPO_PAGE_URL = BASE_URL + 'report/mainboard-ipo-list-in-india-bse-nse/83/'
     SME_IPO_PAGE_URL = BASE_URL + 'report/sme-ipo-list-in-india-bse-sme-nse-emerge/84/'
     NCD_PAGE_URL = BASE_URL + 'report/latest-ncd-issue-in-india/27/'
@@ -24,23 +24,29 @@ class ChittorgarhClient:
 
     MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
 
-    subscription_category_mapping = {
-        'QIB': IPOSubscriptionCategory.QIB,
-        'NII': IPOSubscriptionCategory.NII,
+    live_subscription_category_mapping = {
+        'Qualified Institutions': IPOSubscriptionCategory.QIB,
+        'Non-Institutional Buyers': IPOSubscriptionCategory.NII,
         'bNII (bids above 10L)': IPOSubscriptionCategory.BHNI,
         'sNII (bids below 10L)': IPOSubscriptionCategory.SHNI,
-        'Retail': IPOSubscriptionCategory.Retail,
-        'Total': IPOSubscriptionCategory.Total,
+        'Retail Investors': IPOSubscriptionCategory.Retail,
+        'Total **': IPOSubscriptionCategory.Total,
     }
 
-    def get_live_subscription(self, ipo_id: Union[str, int]) -> Dict[str, float]:
+    def get_live_subscription(self, ipo_id: Union[str, int]) -> Dict[str, Subscription]:
         table = parse_table_from_url(self.SUBSCRIPTION_URL.format(ipo_id=ipo_id), self.SUBSCRIPTION_XPATH)
         subscription_data = {}
 
         for category, subscription in table.items():
-            category = self.subscription_category_mapping.get(category, category)
-            subscription = float(subscription['Subscription (times)'])
-            subscription_data[category] = subscription
+            if category == 'Anchor Investors':
+                continue
+
+            category = self.live_subscription_category_mapping.get(category, category)
+            subscription_data[category] = Subscription(
+                shared_offered=int(subscription['Shares Offered'].replace(',', '')),
+                shared_bid_for=int(subscription['Shares bid for'].replace(',', '')),
+                bid_amount=float(subscription['Total Amount (Rs Cr.)*'].replace(',', '')),
+            )
 
         return subscription_data
 

@@ -43,6 +43,18 @@ class BuyBack:
         self.issue_size = kwargs.get('issue_size')
 
 
+class Subscription:
+    def __init__(self, shared_offered: int, shared_bid_for: int, bid_amount: float) -> None:
+        super().__init__()
+        self.shared_offered = shared_offered
+        self.shared_bid_for = shared_bid_for
+        self.bid_amount = bid_amount
+
+    @property
+    def subscription_percentage(self):
+        return round(self.shared_bid_for / self.shared_offered, 2)
+
+
 class IPOType:
     EQUITY = 'equity'
     DEBT = 'debt'
