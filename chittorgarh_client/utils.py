@@ -4,6 +4,8 @@ from typing import Dict
 import requests
 from lxml import html
 
+from chittorgarh_client.models import IPOSubscriptionCategory, Subscription
+
 
 def parse_table_from_url(url: str, xpath: str) -> Dict[str, Dict[str, str]]:
     response = requests.get(url=url)
@@ -49,7 +51,7 @@ def parse_row_based_table_from_url(url: str, xpath: str) -> Dict[str, Dict[str, 
     table = html.fromstring(response.text).xpath(xpath)
     if len(table) != 1:
         print('Failed to parse table')
-    return parse_row_based_table_from_url(table[0])
+    return parse_row_based_table_from_url(table[0], xpath)
 
 
 def parse_row_based_table(html_table) -> Dict[str, str]:
@@ -71,3 +73,19 @@ def is_blank(s: str) -> bool:
 def remove_non_ascii(text):
     return re.sub(r'[^\x00-\x7F]', "", text).strip()
 
+
+def get_allotment_probabilities(subscription: Dict[str, Subscription]):
+    allotment_probabilities = {}
+    eligible_categories = [IPOSubscriptionCategory.BHNI, IPOSubscriptionCategory.SHNI, IPOSubscriptionCategory.Retail]
+    multipliers = {
+        IPOSubscriptionCategory.BHNI: 5
+    }
+
+    for k, v in subscription.items():
+        if k not in eligible_categories:
+            continue
+        if v == 0:
+            allotment_probabilities[k] = 100
+            continue
+        allotment_probabilities[k] = min(round(100 / v.subscription_percentage * multipliers.get(k, 1), 2), 100)
+    return allotment_probabilities
