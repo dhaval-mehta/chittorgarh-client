@@ -67,4 +67,5 @@ class IPOSubscriptionCategory:
     BHNI = 'BHNI'
     SHNI = 'SHNI'
     Retail = 'Retail'
+    Employee = 'Employee'
     Total = 'Total'

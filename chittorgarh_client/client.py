@@ -30,6 +30,7 @@ class ChittorgarhClient:
         'bNII (bids above 10L)': IPOSubscriptionCategory.BHNI,
         'sNII (bids below 10L)': IPOSubscriptionCategory.SHNI,
         'Retail Investors': IPOSubscriptionCategory.Retail,
+        'Employees': IPOSubscriptionCategory.Employee,
         'Total **': IPOSubscriptionCategory.Total,
     }
 
