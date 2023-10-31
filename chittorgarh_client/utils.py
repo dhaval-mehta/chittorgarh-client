@@ -84,7 +84,7 @@ def get_allotment_probabilities(subscription: Dict[str, Subscription]):
     for k, v in subscription.items():
         if k not in eligible_categories:
             continue
-        if v == 0:
+        if v.subscription_percentage == 0:
             allotment_probabilities[k] = 100
             continue
         allotment_probabilities[k] = min(round(100 / v.subscription_percentage * multipliers.get(k, 1), 2), 100)

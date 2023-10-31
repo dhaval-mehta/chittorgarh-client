@@ -39,10 +39,10 @@ class ChittorgarhClient:
         subscription_data = {}
 
         for category, subscription in table.items():
-            if category == 'Anchor Investors':
+            if category not in self.live_subscription_category_mapping:
                 continue
 
-            category = self.live_subscription_category_mapping.get(category, category)
+            category = self.live_subscription_category_mapping[category]
             subscription_data[category] = Subscription(
                 shared_offered=int(subscription['Shares Offered'].replace(',', '')),
                 shared_bid_for=int(subscription['Shares bid for'].replace(',', '')),
