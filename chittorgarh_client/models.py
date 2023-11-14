@@ -42,6 +42,14 @@ class BuyBack:
         self.market_price = kwargs.get('market_price')
         self.issue_size = kwargs.get('issue_size')
 
+    @property
+    def gain(self):
+        return round(self.buy_back_price - self.market_price, 2)
+
+    @property
+    def gain_percentage(self):
+        return round(self.gain * 100 / self.market_price, 2)
+
 
 class Subscription:
     def __init__(self, shared_offered: int, shared_bid_for: int, bid_amount: float) -> None:

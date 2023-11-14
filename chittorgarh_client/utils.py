@@ -89,3 +89,10 @@ def get_allotment_probabilities(subscription: Dict[str, Subscription]):
             continue
         allotment_probabilities[k] = min(round(100 / v.subscription_percentage * multipliers.get(k, 1), 2), 100)
     return allotment_probabilities
+
+
+def get_number_or_input(x):
+    try:
+        return float(x)
+    except ValueError:
+        return x

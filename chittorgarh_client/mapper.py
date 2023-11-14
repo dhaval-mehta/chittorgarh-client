@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from chittorgarh_client.models import IPO, NCD, BuyBack
-from chittorgarh_client.utils import is_blank
+from chittorgarh_client.utils import is_blank, get_number_or_input
 
 
 def parse_date(date, date_format):
@@ -78,6 +78,9 @@ def build_buy_back(url: str, name: str, record_date: str, open_date: str, close_
     record_date = parse_date(record_date, date_format)
     open_date = parse_date(open_date, date_format)
     close_date = parse_date(close_date, date_format)
+    buy_back_price = get_number_or_input(buy_back_price)
+    market_price = get_number_or_input(market_price)
+    issue_size = get_number_or_input(issue_size)
 
     return BuyBack(
         id=url,
@@ -89,4 +92,3 @@ def build_buy_back(url: str, name: str, record_date: str, open_date: str, close_
         market_price=market_price,
         issue_size=issue_size,
     )
-
