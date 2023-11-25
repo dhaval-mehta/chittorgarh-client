@@ -12,6 +12,8 @@ def parse_date(date, date_format):
         date = datetime.datetime.strptime(date, date_format).date()
         if date.year == 1900:
             date = date.replace(year=datetime.datetime.now().year)
+        if date < datetime.date.today():
+            date = date.replace(year=date.year + 1)
         return date
     except ValueError:
         raise Exception('failed to parse start date')
