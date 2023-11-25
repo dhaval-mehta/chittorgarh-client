@@ -20,7 +20,8 @@ def parse_date(date, date_format):
 
 
 def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices: str,
-              issue_size: str, ipo_type: str, date_format: str, gmp: Optional[str] = None) -> IPO:
+              issue_size: str, ipo_type: str, date_format: str, gmp: Optional[str] = None,
+              allotment_date: Optional[str] = None, listing_date: Optional[str] = None) -> IPO:
     try:
         issue_size = round(float(issue_size), 2)
     except ValueError:
@@ -28,6 +29,8 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
 
     open_date = parse_date(open_date, date_format)
     close_date = parse_date(close_date, date_format)
+    allotment_date = parse_date(allotment_date, date_format)
+    listing_date = parse_date(listing_date, date_format)
 
     issue_prices = issue_prices.split(" ")
     if len(issue_prices) == 3:
@@ -51,6 +54,8 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
         name=name,
         open_date=open_date,
         close_date=close_date,
+        allotment_date=allotment_date,
+        listing_date=listing_date,
         lot_size='',
         issue_price=issue_price,
         issue_size=issue_size,

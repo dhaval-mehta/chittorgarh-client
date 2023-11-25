@@ -8,6 +8,8 @@ class IPO:
         self.type = kwargs.get('ipo_type')
         self.issue_price = kwargs.get('issue_price')
         self.issue_size = kwargs.get('issue_size')
+        self.listing_date = kwargs.get('listing_date')
+        self.allotment_date = kwargs.get('allotment_date')
         self.gmp = kwargs.get('gmp')
 
     @property
