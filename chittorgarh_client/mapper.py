@@ -10,10 +10,13 @@ def parse_date(date, date_format):
         return date
     try:
         date = datetime.datetime.strptime(date, date_format).date()
+        today = datetime.date.today()
         if date.year == 1900:
-            date = date.replace(year=datetime.datetime.now().year)
-            if (date - datetime.date.today()).days > 180:
+            date = date.replace(year=today.year)
+            if (today - date).days > 180:
                 date = date.replace(year=date.year + 1)
+            elif (date - today).days > 90:
+                date = date.replace(year=date.year - 1)
         return date
     except ValueError:
         raise Exception('failed to parse start date')
