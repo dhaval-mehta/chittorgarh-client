@@ -8,8 +8,19 @@ from chittorgarh_client.utils import is_blank, get_number_or_input
 def parse_date(date, date_format):
     if date == '' or date is None:
         return date
+    if 'Y' or 'y' not in date_format:
+        date_format += '|%Y'
+        date += '|2000'
     try:
-        return datetime.datetime.strptime(date, date_format).date()
+        date = datetime.datetime.strptime(date, date_format).date()
+        today = datetime.date.today()
+        if date.year == 2000:
+            date = date.replace(year=today.year)
+            if (today - date).days > 180:
+                date = date.replace(year=date.year + 1)
+            elif (date - today).days > 90:
+                date = date.replace(year=date.year - 1)
+        return date
     except ValueError:
         raise Exception('failed to parse start date')
 

@@ -1,4 +1,3 @@
-import datetime
 from typing import Dict, List, Union
 
 import requests
@@ -146,7 +145,7 @@ class InvestorGainClient:
     MAIN_BOARD_IPO_TABLE_XPATH = '//*[@id="mainTable"]'
     SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
 
-    IPO_PAGE_DATE_FORMAT = '%d-%b-%Y'
+    IPO_PAGE_DATE_FORMAT = '%d-%b'
 
     def get_mainboard_ipos(self) -> List[IPO]:
         data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
@@ -155,10 +154,10 @@ class InvestorGainClient:
             ipos.append(build_ipo(
                 url=data['url'],
                 name=name,
-                open_date=self.with_year(data['Open']),
-                close_date=self.with_year(data['Close']),
-                allotment_date=self.with_year(data['BoA Dt']),
-                listing_date=self.with_year(data['Listing']),
+                open_date=data['Open'],
+                close_date=data['Close'],
+                allotment_date=data['BoA Dt'],
+                listing_date=data['Listing'],
                 issue_prices=data['Price'],
                 issue_size=data['IPO Size'],
                 gmp=data['GMP()'],
@@ -166,10 +165,6 @@ class InvestorGainClient:
                 date_format=self.IPO_PAGE_DATE_FORMAT,
             ))
         return ipos
-
-    @staticmethod
-    def with_year(date):
-        return date + '-' + str(datetime.date.today().year)
 
     def get_sme_ipos(self) -> List[IPO]:
         data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
