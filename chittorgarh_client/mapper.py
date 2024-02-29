@@ -8,7 +8,7 @@ from chittorgarh_client.utils import is_blank, get_number_or_input
 def parse_date(date, date_format):
     if date == '' or date is None:
         return date
-    if 'Y' or 'y' not in date_format:
+    if 'y' not in date_format.lower():
         date_format += '|%Y'
         date += '|2000'
     try:
