@@ -96,3 +96,24 @@ def get_number_or_input(x):
         return float(x)
     except ValueError:
         return x
+
+
+def get_acceptance_ratios(subscription: Dict[str, Subscription]):
+    acceptance_ratios = {}
+    eligible_categories = [IPOSubscriptionCategory.BHNI, IPOSubscriptionCategory.SHNI, IPOSubscriptionCategory.Retail]
+    multipliers = {
+        IPOSubscriptionCategory.BHNI: 5
+    }
+
+    for k, v in subscription.items():
+        if k not in eligible_categories:
+            continue
+
+        ratio = v.subscription_percentage / multipliers.get(k, 1)
+
+        if ratio <= 1:
+            acceptance_ratios[k] = 'Confirmed Allotment'
+        else:
+            acceptance_ratios[k] = f'1 out of {ratio:.2f}'
+
+    return acceptance_ratios
