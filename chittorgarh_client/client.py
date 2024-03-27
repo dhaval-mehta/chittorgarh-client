@@ -151,11 +151,12 @@ class InvestorGainClient:
         data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
+            open_date, close_date = data['Open'].split(' to ')
             ipos.append(build_ipo(
                 url=data['url'],
                 name=name,
-                open_date=data['Open'],
-                close_date=data['Close'],
+                open_date=open_date,
+                close_date=close_date,
                 allotment_date=data['BoA Dt'],
                 listing_date=data['Listing'],
                 issue_prices=data['Price'],
@@ -170,11 +171,12 @@ class InvestorGainClient:
         data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
         ipos = []
         for name, data in data.items():
+            open_date, close_date = data['Open'].split(' to ')
             ipos.append(build_ipo(
                 url=data['url'],
                 name=name,
-                open_date=data['Open'],
-                close_date=data['Close'],
+                open_date=open_date,
+                close_date=close_date,
                 allotment_date=data['BoA Dt'],
                 listing_date=data['Listing'],
                 issue_prices=data['Price'],
