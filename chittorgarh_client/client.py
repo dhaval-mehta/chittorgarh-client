@@ -20,7 +20,7 @@ class ChittorgarhClient:
     SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     NCD_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     TENDER_BUYBACK_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
-    SUBSCRIPTION_XPATH = '/html/body/div/div[2]/table'
+    SUBSCRIPTION_XPATH = '/html/body/div[1]/div[2]/table'
 
     MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
 
