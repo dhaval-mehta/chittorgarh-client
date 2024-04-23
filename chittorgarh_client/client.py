@@ -45,7 +45,7 @@ class ChittorgarhClient:
 
             category = self.live_subscription_category_mapping[category]
             subscription_data[category] = Subscription(
-                shared_offered=int(subscription['Shares Offered'].replace(',', '')),
+                shared_offered=int(subscription['Shares Offered*'].replace(',', '')),
                 shared_bid_for=int(subscription['Shares bid for'].replace(',', '')),
                 bid_amount=float(subscription['Total Amount (Rs Cr.)*'].replace(',', '')),
             )
