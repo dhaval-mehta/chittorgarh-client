@@ -109,10 +109,10 @@ def get_acceptance_ratios(subscription: Dict[str, Subscription]):
         if k not in eligible_categories:
             continue
 
-        ratio = v.subscription_percentage / multipliers.get(k, 1)
+        ratio = v.subscription_percentage * 0.95 / multipliers.get(k, 1)
 
         if ratio <= 1:
-            acceptance_ratios[k] = 'Confirmed Allotment'
+            acceptance_ratios[k] = 'Confirmed'
         else:
             acceptance_ratios[k] = f'1 out of {ratio:.2f}'
 
