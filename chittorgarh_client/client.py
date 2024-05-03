@@ -27,12 +27,11 @@ class ChittorgarhClient:
     live_subscription_category_mapping = {
         'Qualified Institutions': IPOSubscriptionCategory.QIB,
         'Non-Institutional Buyers': IPOSubscriptionCategory.NII,
-        'Non-Institutional Buyers*': IPOSubscriptionCategory.NII,
         'bNII (bids above 10L)': IPOSubscriptionCategory.BHNI,
         'sNII (bids below 10L)': IPOSubscriptionCategory.SHNI,
         'Retail Investors': IPOSubscriptionCategory.Retail,
         'Employees': IPOSubscriptionCategory.Employee,
-        'Total **': IPOSubscriptionCategory.Total,
+        'Total': IPOSubscriptionCategory.Total,
     }
 
     def get_live_subscription(self, ipo_id: Union[str, int]) -> Dict[str, Subscription]:
@@ -40,11 +39,15 @@ class ChittorgarhClient:
         subscription_data = {}
 
         for category, subscription in table.items():
-            if category not in self.live_subscription_category_mapping:
+            mapped_category = None
+            for k,v in self.live_subscription_category_mapping.items():
+                if category.startswith(k):
+                    mapped_category = v
+
+            if mapped_category is None:
                 continue
 
-            category = self.live_subscription_category_mapping[category]
-            subscription_data[category] = Subscription(
+            subscription_data[mapped_category] = Subscription(
                 shared_offered=int(subscription['Shares Offered*'].replace(',', '')),
                 shared_bid_for=int(subscription['Shares bid for'].replace(',', '')),
                 bid_amount=float(subscription['Total Amount (Rs Cr.)*'].replace(',', '')),
