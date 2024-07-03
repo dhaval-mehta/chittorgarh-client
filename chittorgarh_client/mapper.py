@@ -47,7 +47,7 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
         issue_price = ''
 
     if not is_blank(gmp):
-        gmp = int(gmp)
+        gmp = float(gmp)
     else:
         gmp = None
 
