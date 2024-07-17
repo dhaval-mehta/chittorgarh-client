@@ -16,12 +16,12 @@ def parse_date(date, date_format):
         today = datetime.date.today()
         if date.year == 2000:
             date = date.replace(year=today.year)
-            if (today - date).days > 15:
+            if (today - date).days > 350:
                 date = date.replace(year=date.year + 1)
             elif (date - today).days > 90:
                 date = date.replace(year=date.year - 1)
         return date
-    except ValueError:
+    except ValueError as e:
         raise Exception('failed to parse start date')
 
 
