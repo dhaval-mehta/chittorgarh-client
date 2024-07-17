@@ -16,7 +16,7 @@ def parse_date(date, date_format):
         today = datetime.date.today()
         if date.year == 2000:
             date = date.replace(year=today.year)
-            if (today - date).days > 180:
+            if (today - date).days > 15:
                 date = date.replace(year=date.year + 1)
             elif (date - today).days > 90:
                 date = date.replace(year=date.year - 1)
