@@ -143,10 +143,7 @@ class InvestorGainClient:
     BASE_URL = 'https://webnodejs.investorgain.com'
 
     MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/9/2025/2025-26/0/ipo?v=08-18'
-    SME_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/sme'
-
-    MAIN_BOARD_IPO_TABLE_XPATH = '//*[@id="mainTable"]'
-    SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
+    SME_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/9/2025/2025-26/0/sme?search=&v=08-49'
 
     IPO_PAGE_DATE_FORMAT = '%d-%b'
 
@@ -177,19 +174,19 @@ class InvestorGainClient:
         return ipos
 
     def get_sme_ipos(self) -> List[IPO]:
-        data = parse_table_from_url(self.SME_IPO_PAGE_URL, self.SME_IPO_TABLE_XPATH)
+        data = self.session.get(self.SME_IPO_PAGE_URL).json()['reportTableData']
         ipos = []
-        for name, data in data.items():
+        for item in data:
             ipos.append(build_ipo(
-                url=data['url'],
-                name=name,
-                open_date=data['Open'],
-                close_date=data['Close'],
-                allotment_date=data['BoA Dt'],
-                listing_date=data['Listing'],
-                issue_prices=data['Price'],
-                issue_size=data['IPO Size'],
-                gmp=data['GMP()'],
+                url=item['~urlrewrite_folder_name'],
+                name=item['~ipo_name'],
+                open_date=item['Open'],
+                close_date=item['Close'],
+                allotment_date=item['BoA Dt'],
+                listing_date=item['Listing'],
+                issue_prices=item['Price'],
+                issue_size=item['IPO Size'].replace('&#8377;', '').replace(' Cr', ''),
+                gmp_percentage=item['~gmp_percent_calc'],
                 ipo_type=IPOType.SME,
                 date_format=self.IPO_PAGE_DATE_FORMAT,
             ))
