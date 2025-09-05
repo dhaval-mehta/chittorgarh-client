@@ -169,7 +169,7 @@ class InvestorGainClient:
                 allotment_date=item['BoA Dt'],
                 listing_date=item['Listing'],
                 issue_prices=item['Price'],
-                issue_size=item['IPO Size'],
+                issue_size=item['IPO Size'].replace('&#8377;', '').replace(' Cr', ''),
                 gmp_percentage=item['~gmp_percent_calc'],
                 ipo_type=IPOType.EQUITY,
                 date_format=self.IPO_PAGE_DATE_FORMAT,
