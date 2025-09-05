@@ -40,7 +40,7 @@ class ChittorgarhClient:
 
         for category, subscription in table.items():
             mapped_category = None
-            for k,v in self.live_subscription_category_mapping.items():
+            for k, v in self.live_subscription_category_mapping.items():
                 if category.startswith(k):
                     mapped_category = v
 
@@ -140,9 +140,9 @@ class ChittorgarhClient:
 
 
 class InvestorGainClient:
-    BASE_URL = 'https://www.investorgain.com/'
+    BASE_URL = 'https://webnodejs.investorgain.com'
 
-    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/ipo'
+    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/9/2025/2025-26/0/ipo?v=08-18'
     SME_IPO_PAGE_URL = BASE_URL + '/report/live-ipo-gmp/331/sme'
 
     MAIN_BOARD_IPO_TABLE_XPATH = '//*[@id="mainTable"]'
@@ -150,20 +150,27 @@ class InvestorGainClient:
 
     IPO_PAGE_DATE_FORMAT = '%d-%b'
 
+    def __init__(self):
+        super().__init__()
+        self.session = requests.Session()
+        self.session.headers.update({
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+        })
+
     def get_mainboard_ipos(self) -> List[IPO]:
-        data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
+        data = self.session.get(self.MAIN_BOARD_IPO_PAGE_URL).json()['reportTableData']
         ipos = []
-        for name, data in data.items():
+        for item in data:
             ipos.append(build_ipo(
-                url=data['url'],
-                name=name,
-                open_date=data['Open'],
-                close_date=data['Close'],
-                allotment_date=data['BoA Dt'],
-                listing_date=data['Listing'],
-                issue_prices=data['Price'],
-                issue_size=data['IPO Size'],
-                gmp=data['GMP()'],
+                url=item['~urlrewrite_folder_name'],
+                name=item['~ipo_name'],
+                open_date=item['Open'],
+                close_date=item['Close'],
+                allotment_date=item['BoA Dt'],
+                listing_date=item['Listing'],
+                issue_prices=item['Price'],
+                issue_size=item['IPO Size'],
+                gmp_percentage=item['~gmp_percent_calc'],
                 ipo_type=IPOType.EQUITY,
                 date_format=self.IPO_PAGE_DATE_FORMAT,
             ))
