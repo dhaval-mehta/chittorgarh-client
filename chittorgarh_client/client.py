@@ -142,8 +142,8 @@ class ChittorgarhClient:
 class InvestorGainClient:
     BASE_URL = 'https://webnodejs.investorgain.com'
 
-    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/1/2026/2025-26/0/nonzeroipo?search=&v=23-18'
-    SME_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/1/2026/2025-26/0/nonzerosme?search=&v=22-49'
+    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/1/2026/2025-26/0/ipo?search=&v=09-18'
+    SME_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/1/2026/2025-26/0/sme?search=&v=22-49'
 
     IPO_PAGE_DATE_FORMAT = '%Y-%m-%d'
 
