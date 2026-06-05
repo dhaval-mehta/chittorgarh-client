@@ -1,5 +1,6 @@
 from typing import Dict, List, Union
 
+import lxml.html
 import requests
 from lxml import html
 
@@ -11,7 +12,7 @@ from chittorgarh_client.utils import parse_table_from_url, parse_table
 class ChittorgarhClient:
     BASE_URL = 'https://www.chittorgarh.com/'
     SUBSCRIPTION_URL = 'https://www.chittorgarh.net/documents/subscription/{ipo_id}/subscriptions.html'
-    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + 'report/mainboard-ipo-list-in-india-bse-nse/83/'
+    MAIN_BOARD_IPO_PAGE_URL = 'https://webnodejs.chittorgarh.com/cloud/report/data-read/82/1/6/2026/2026-27/0/mainboard/0?search=&v=14-08'
     SME_IPO_PAGE_URL = BASE_URL + 'report/sme-ipo-list-in-india-bse-sme-nse-emerge/84/'
     NCD_PAGE_URL = BASE_URL + 'report/latest-ncd-issue-in-india/27/'
     TENDER_BUYBACK_PAGE_URL = BASE_URL + 'report/latest-buyback-issues-in-india/80/tender-offer-buyback/'
@@ -31,7 +32,7 @@ class ChittorgarhClient:
         'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
     }
 
-    MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
+    MAIN_BOARD_IPO_DATE_FORMAT = '%d-%b-%Y'
 
     live_subscription_category_mapping = {
         'QIB (Ex Anchor)': IPOSubscriptionCategory.QIB,
@@ -78,16 +79,17 @@ class ChittorgarhClient:
         return subscription_data
 
     def get_mainboard_ipos(self) -> List[IPO]:
-        data = parse_table_from_url(self.MAIN_BOARD_IPO_PAGE_URL, self.MAIN_BOARD_IPO_TABLE_XPATH)
+        resp = requests.get(url=self.MAIN_BOARD_IPO_PAGE_URL)
+        resp.raise_for_status()
         ipos = []
-        for name, data in data.items():
+        for row in resp.json()['reportTableData']:
             ipos.append(build_ipo(
-                url=data['url'],
-                name=name,
-                open_date=data['Open Date'],
-                close_date=data['Close Date'],
-                issue_prices=data['Issue Price (Rs)'],
-                issue_size=data['Issue Size (Rs Cr.)'],
+                url=html.fragment_fromstring(row['Company'], create_parent='div').find('.//a').get('href'),
+                name=row['~compare_name'],
+                open_date=row['Opening Date'],
+                close_date=row['Closing Date'],
+                issue_prices=row['Issue Price (Rs.)'],
+                issue_size=row['Total Issue Amount (Incl.Firm reservations) (Rs.cr.)'],
                 ipo_type=IPOType.EQUITY,
                 date_format=self.MAIN_BOARD_IPO_DATE_FORMAT,
             ))
