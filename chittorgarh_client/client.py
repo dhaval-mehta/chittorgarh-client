@@ -141,9 +141,10 @@ class ChittorgarhClient:
 
 class InvestorGainClient:
     BASE_URL = 'https://webnodejs.investorgain.com'
+    ORIGIN_URL = 'https://www.investorgain.com'
 
-    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/1/2026/2025-26/0/ipo?search=&v=09-18'
-    SME_IPO_PAGE_URL = BASE_URL + '/cloud/report/data-read/331/1/1/2026/2025-26/0/sme?search=&v=22-49'
+    MAIN_BOARD_IPO_PAGE_URL = BASE_URL + '/cloud/v2/report/data-read/331/1/6/2026/2026-27/0/ipo?search=&v=22-18'
+    SME_IPO_PAGE_URL = BASE_URL + '/cloud/v2/report/data-read/331/1/6/2026/2026-27/0/sme?search=&v=22-18'
 
     IPO_PAGE_DATE_FORMAT = '%Y-%m-%d'
 
@@ -151,7 +152,10 @@ class InvestorGainClient:
         super().__init__()
         self.session = requests.Session()
         self.session.headers.update({
-            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36',
+            'accept': 'application/json, text/plain, */*',
+            'origin': self.ORIGIN_URL,
+            'referer': self.ORIGIN_URL + '/',
+            'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
         })
 
     def get_mainboard_ipos(self) -> List[IPO]:
@@ -166,7 +170,7 @@ class InvestorGainClient:
                 allotment_date=item['~Srt_BoA_Dt'],
                 listing_date=item['~Str_Listing'],
                 issue_prices=item['Price (₹)'],
-                issue_size=item['IPO Size (₹ in cr)'].strip(),
+                issue_size=item['IPO Size'].strip(),
                 gmp_percentage=item['~gmp_percent_calc'],
                 ipo_type=IPOType.EQUITY,
                 date_format=self.IPO_PAGE_DATE_FORMAT,
@@ -185,7 +189,7 @@ class InvestorGainClient:
                 allotment_date=item['~Srt_BoA_Dt'],
                 listing_date=item['~Str_Listing'],
                 issue_prices=item['Price (₹)'],
-                issue_size=item['IPO Size (₹ in cr)'].strip(),
+                issue_size=item['IPO Size'].strip(),
                 gmp_percentage=item['~gmp_percent_calc'],
                 ipo_type=IPOType.SME,
                 date_format=self.IPO_PAGE_DATE_FORMAT,

@@ -1,5 +1,5 @@
 import re
-from typing import Dict
+from typing import Dict, Union
 
 import requests
 from lxml import html
@@ -96,6 +96,21 @@ def get_number_or_input(x):
         return float(x)
     except ValueError:
         return x
+
+
+def parse_issue_size(issue_size: str) -> Union[float, str]:
+    if is_blank(issue_size):
+        return issue_size
+    try:
+        return round(float(issue_size), 2)
+    except ValueError:
+        pass
+    from html import unescape
+    issue_size = unescape(issue_size)
+    match = re.search(r'[\d,]+(?:\.\d+)?', issue_size.replace(',', ''))
+    if match:
+        return round(float(match.group()), 2)
+    return issue_size
 
 
 def get_acceptance_ratios(subscription: Dict[str, Subscription]):

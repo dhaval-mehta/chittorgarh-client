@@ -2,7 +2,7 @@ import datetime
 from typing import Optional
 
 from chittorgarh_client.models import IPO, NCD, BuyBack
-from chittorgarh_client.utils import is_blank, get_number_or_input
+from chittorgarh_client.utils import is_blank, get_number_or_input, parse_issue_size
 
 
 def parse_date(date, date_format):
@@ -29,10 +29,7 @@ def build_ipo(url: str, name: str, open_date: str, close_date: str, issue_prices
               issue_size: str, ipo_type: str, date_format: str, gmp_percentage: Optional[str] = None,
               gmp: Optional[str] = None, allotment_date: Optional[str] = None,
               listing_date: Optional[str] = None) -> IPO:
-    try:
-        issue_size = round(float(issue_size), 2)
-    except ValueError:
-        pass
+    issue_size = parse_issue_size(issue_size)
 
     open_date = parse_date(open_date, date_format)
     close_date = parse_date(close_date, date_format)
