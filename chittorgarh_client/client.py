@@ -10,7 +10,7 @@ from chittorgarh_client.utils import parse_table_from_url, parse_table
 
 class ChittorgarhClient:
     BASE_URL = 'https://www.chittorgarh.com/'
-    SUBSCRIPTION_URL = BASE_URL + 'documents/subscription/{ipo_id}/subscriptions.html'
+    SUBSCRIPTION_URL = 'https://www.chittorgarh.net/documents/subscription/{ipo_id}/subscriptions.html'
     MAIN_BOARD_IPO_PAGE_URL = BASE_URL + 'report/mainboard-ipo-list-in-india-bse-nse/83/'
     SME_IPO_PAGE_URL = BASE_URL + 'report/sme-ipo-list-in-india-bse-sme-nse-emerge/84/'
     NCD_PAGE_URL = BASE_URL + 'report/latest-ncd-issue-in-india/27/'
@@ -20,22 +20,43 @@ class ChittorgarhClient:
     SME_IPO_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     NCD_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
     TENDER_BUYBACK_TABLE_XPATH = MAIN_BOARD_IPO_TABLE_XPATH
-    SUBSCRIPTION_XPATH = '/html/body/div[1]/div[2]/table'
+    SUBSCRIPTION_XPATH = '//table[contains(@class, "watermark")]'
+    SUBSCRIPTION_HEADERS = {
+        'accept': '*/*',
+        'cache-control': 'no-store',
+        'expires': '0',
+        'origin': BASE_URL.rstrip('/'),
+        'pragma': 'no-cache',
+        'referer': BASE_URL,
+        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
+    }
 
     MAIN_BOARD_IPO_DATE_FORMAT = '%b %d, %Y'
 
     live_subscription_category_mapping = {
+        'QIB (Ex Anchor)': IPOSubscriptionCategory.QIB,
         'Qualified Institutions': IPOSubscriptionCategory.QIB,
+        'NII': IPOSubscriptionCategory.NII,
         'Non-Institutional Buyers': IPOSubscriptionCategory.NII,
-        'bNII (bids above 10L)': IPOSubscriptionCategory.BHNI,
-        'sNII (bids below 10L)': IPOSubscriptionCategory.SHNI,
+        'bNII': IPOSubscriptionCategory.BHNI,
+        'sNII': IPOSubscriptionCategory.SHNI,
+        'Retail': IPOSubscriptionCategory.Retail,
         'Retail Investors': IPOSubscriptionCategory.Retail,
         'Employees': IPOSubscriptionCategory.Employee,
         'Total': IPOSubscriptionCategory.Total,
     }
 
     def get_live_subscription(self, ipo_id: Union[str, int]) -> Dict[str, Subscription]:
-        table = parse_table_from_url(self.SUBSCRIPTION_URL.format(ipo_id=ipo_id), self.SUBSCRIPTION_XPATH)
+        response = requests.get(
+            url=self.SUBSCRIPTION_URL.format(ipo_id=ipo_id),
+            params={'abc': '470'},
+            headers=self.SUBSCRIPTION_HEADERS,
+        )
+        response.raise_for_status()
+        tables = html.fromstring(response.text).xpath(self.SUBSCRIPTION_XPATH)
+        if len(tables) != 1:
+            raise Exception('Failed to parse table')
+        table = parse_table(tables[0])
         subscription_data = {}
 
         for category, subscription in table.items():
@@ -47,10 +68,11 @@ class ChittorgarhClient:
             if mapped_category is None:
                 continue
 
+            bid_amount = subscription.get('Total Amt* ( Cr.)') or subscription['Total Amount (Rs Cr.)*']
             subscription_data[mapped_category] = Subscription(
                 shared_offered=int(subscription['Shares Offered*'].replace(',', '')),
                 shared_bid_for=int(subscription['Shares bid for'].replace(',', '')),
-                bid_amount=float(subscription['Total Amount (Rs Cr.)*'].replace(',', '')),
+                bid_amount=float(bid_amount.replace(',', '')),
             )
 
         return subscription_data
